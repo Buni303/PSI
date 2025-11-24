@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-o9N1j7kDz7fM2Qv3bQxjKkQp6bE2w5rKk6tG1A9g8kM=" crossorigin=""/>
     <style>
         :root{
             --primary:#0b5ed7;
@@ -63,6 +64,19 @@
         .agent-card{border-radius:12px;padding:1rem;background:white;box-shadow:var(--card-shadow);text-align:center}
 
         @media(max-width:768px){.hero{padding:3.5rem 0}.house-thumb{height:180px}}
+        /* Reveal on scroll */
+        .reveal{opacity:0;transform:translateY(18px);transition:opacity 600ms ease, transform 600ms ease}
+        .reveal.visible{opacity:1;transform:none}
+
+        /* Search suggestions */
+        #searchSuggestions{position:absolute;z-index:1060;max-height:260px;overflow:auto;width:100%;box-shadow:0 8px 30px rgba(2,6,23,0.08);border-radius:8px}
+        #searchSuggestions .list-group-item{cursor:pointer}
+
+        /* Floating action button */
+        .fab{position:fixed;right:24px;bottom:24px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(2,6,23,0.12);z-index:1070}
+
+        /* Lightbox */
+        .lightbox-img{max-height:80vh;object-fit:contain}
     </style>
 </head>
 <body>
@@ -141,7 +155,10 @@
 
                 <div class="row mb-3 search-row align-items-center">
                     <div class="col-md-6 d-flex">
-                        <input id="searchInput" class="form-control me-2" placeholder="Procurar por cidade, nome ou preço...">
+                        <div style="position:relative;flex:1">
+                            <input id="searchInput" class="form-control me-2" placeholder="Procurar por cidade, nome ou preço...">
+                            <div id="searchSuggestions" class="list-group" style="display:none"></div>
+                        </div>
                         <select id="sortSelect" class="form-select" style="max-width:180px">
                             <option value="default">Ordenar</option>
                             <option value="price-asc">Preço ↑</option>
@@ -324,6 +341,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j7kDz7fM2Qv3bQxjKkQp6bE2w5rKk6tG1A9g8kM=" crossorigin=""></script>
     <script>
         // Expanded list of houses with more images to enrich the page (many items to increase file length)
         const houses = [
@@ -688,7 +706,146 @@
             // placeholder for potential extended summary
         }
 
-        document.addEventListener('DOMContentLoaded', ()=>{ renderHouses(houses); showQuestion(); });
+        /* ---------------- Additional UI: map, lightbox, suggestions, reveal ---------------- */
+        const cityCoords = {
+            'Porto':[41.1579,-8.6291], 'Lisboa':[38.7223,-9.1393], 'Faro':[37.0194,-7.9304], 'Coimbra':[40.2033,-8.4103],
+            'Braga':[41.5454,-8.4265], 'Cascais':[38.6979,-9.4221], 'Aveiro':[40.6405,-8.6538], 'Évora':[38.5710,-7.9135],
+            'Algarve':[37.0179,-7.9303], 'Setúbal':[38.5244,-8.8882], 'Bragança':[41.8062,-6.7543], 'Lagos':[37.1020,-8.6784],
+            'Leiria':[39.7436,-8.8070], 'Viana do Castelo':[41.6933,-8.8339], 'Funchal':[32.6669,-16.9241], 'Vila Nova de Milfontes':[37.7618,-8.7864],
+            'Serra da Estrela':[40.3210,-7.6039]
+        };
+
+        let mapInstance = null;
+        function initMap(){
+            try{
+                const el = document.getElementById('mapPlaceholder');
+                el.innerHTML = '<div id="map" style="height:100%;width:100%"></div>';
+                mapInstance = L.map('map', {zoomControl:true}).setView([39.5,-8.0], 7);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap contributors'}).addTo(mapInstance);
+                houses.forEach(h=>{
+                    const c = cityCoords[h.city] || [39.5,-8.0];
+                    const m = L.marker(c).addTo(mapInstance).bindPopup(`<strong>${h.title}</strong><br>${h.city}<br>€${h.price.toLocaleString()}`);
+                });
+            } catch(e){ console.warn('Leaflet init failed',e) }
+        }
+
+        // Lightbox for gallery images and house images
+        function initLightbox(){
+            const galleryImgs = document.querySelectorAll('#gallery img, .house-thumb');
+            galleryImgs.forEach(img=>{
+                img.style.cursor = 'zoom-in';
+                img.addEventListener('click', (ev)=>{
+                    openLightbox(ev.currentTarget.src, ev.currentTarget.alt||'Imagem');
+                });
+            });
+        }
+
+        function openLightbox(src,alt){
+            let lb = document.getElementById('imageLightbox');
+            if(!lb) return;
+            lb.querySelector('.modal-body img').src = src;
+            lb.querySelector('.modal-title').textContent = alt;
+            const modal = new bootstrap.Modal(lb);
+            modal.show();
+        }
+
+        // Reveal on scroll
+        function initReveal(){
+            const obs = new IntersectionObserver((entries)=>{
+                entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            },{threshold:0.12});
+            document.querySelectorAll('.card-house, .hero-visual, #gallery img, .quiz-card').forEach(el=>{ el.classList.add('reveal'); obs.observe(el); });
+        }
+
+        // Search suggestions
+        function initSearchSuggestions(){
+            const input = document.getElementById('searchInput');
+            const box = document.getElementById('searchSuggestions');
+            input.addEventListener('input', ()=>{
+                const q = input.value.trim().toLowerCase();
+                if(!q){ box.style.display='none'; return; }
+                const matches = houses.filter(h=>h.title.toLowerCase().includes(q) || h.city.toLowerCase().includes(q)).slice(0,8);
+                box.innerHTML = '';
+                matches.forEach(m=>{
+                    const it = document.createElement('button'); it.type='button'; it.className='list-group-item list-group-item-action';
+                    it.textContent = `${m.title} — ${m.city} — €${m.price.toLocaleString()}`;
+                    it.addEventListener('click', ()=>{ input.value = m.title; box.style.display='none'; applyListState(); });
+                    box.appendChild(it);
+                });
+                box.style.display = matches.length? 'block':'none';
+            });
+            document.addEventListener('click', (e)=>{ if(!e.target.closest('#searchSuggestions') && e.target.id!=='searchInput') box.style.display='none'; });
+        }
+
+        // Quiz leaderboard
+        function saveScoreToLeaderboard(name,score){
+            const k = 'quizLeaderboard';
+            const list = JSON.parse(localStorage.getItem(k)||'[]');
+            list.push({name,score,date:new Date().toISOString()});
+            list.sort((a,b)=>b.score-a.score);
+            localStorage.setItem(k, JSON.stringify(list.slice(0,10)));
+            renderLeaderboard();
+        }
+        function renderLeaderboard(){
+            const box = document.getElementById('quizSummary');
+            const list = JSON.parse(localStorage.getItem('quizLeaderboard')||'[]');
+            const leader = document.getElementById('quizLeaderboard');
+            if(leader){ leader.innerHTML = list.length? list.map(l=>`<li>${l.name} — ${l.score}</li>`).join('') : '<li class="text-muted">Sem pontuações salvas</li>'; }
+            // show top 3 in summary panel too
+            if(box){ box.innerHTML = list.slice(0,5).map(l=>`<li>${l.name} — ${l.score}</li>`).join('') || '<li class="text-muted">Sem pontuações salvas</li>' }
+        }
+
+        function animateCounters(){
+            const elH = document.getElementById('statHouses');
+            const elC = document.getElementById('statCities');
+            const targetH = houses.length; const targetC = [...new Set(houses.map(h=>h.city))].length;
+            let a=0,b=0; const t = setInterval(()=>{ if(a<targetH) elH.textContent = ++a; if(b<targetC) elC.textContent = ++b; if(a>=targetH && b>=targetC) clearInterval(t); },40);
+        }
+
+        // Append a floating FAB
+        (function addFAB(){
+            const a = document.createElement('a'); a.href='#contact'; a.className='btn btn-primary fab'; a.innerHTML = '<i class="fa-solid fa-comment-dots"></i>'; document.body.appendChild(a);
+        })();
+
+        // Add lightbox modal markup dynamically so file edits are minimal
+        (function ensureLightbox(){
+            if(!document.getElementById('imageLightbox')){
+                const div = document.createElement('div'); div.innerHTML = `\
+                <div class="modal fade" id="imageLightbox" tabindex="-1">\
+                  <div class="modal-dialog modal-dialog-centered modal-lg">\
+                    <div class="modal-content">\
+                      <div class="modal-header">\
+                        <h5 class="modal-title">Imagem</h5>\
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\
+                      </div>\
+                      <div class="modal-body text-center">\
+                        <img src="" class="img-fluid lightbox-img" alt="">\
+                      </div>\
+                    </div>\
+                  </div>\
+                </div>`;
+                document.body.appendChild(div.firstElementChild);
+            }
+        })();
+
+        // Extend finishQuiz to save to leaderboard
+        const originalFinish = finishQuiz;
+        finishQuiz = function(){
+            originalFinish();
+            const initials = prompt('Guarde a sua pontuação — escreva as suas iniciais (ex: AAA):','AAA');
+            if(initials){ saveScoreToLeaderboard(initials.toUpperCase().slice(0,6), quizState.score); }
+        }
+
+        document.addEventListener('DOMContentLoaded', ()=>{ 
+            renderHouses(houses); 
+            showQuestion(); 
+            initMap(); 
+            initLightbox(); 
+            initReveal(); 
+            initSearchSuggestions(); 
+            renderLeaderboard();
+            animateCounters();
+        });
     </script>
 </body>
 </html>
