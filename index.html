@@ -1,851 +1,2655 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CasaShop — Loja de Casas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Livraria Alma Literária - Literatura Portuguesa e Mundial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-o9N1j7kDz7fM2Qv3bQxjKkQp6bE2w5rKk6tG1A9g8kM=" crossorigin=""/>
-    <style>
-        :root{
-            --primary:#0b5ed7;
-            --accent:#0dcaf0;
-            --dark:#081225;
-            --muted:#6b7280;
-            --bg:#f4f7fb;
-            --glass: rgba(255,255,255,0.7);
-            --card-shadow: 0 14px 36px rgba(2,6,23,0.06);
-            --radius: 14px;
-            --transition: 300ms cubic-bezier(.2,.9,.2,1);
-        }
-
-        *{box-sizing:border-box}
-        html,body{height:100%}
-        body{font-family:'Poppins',sans-serif;background:linear-gradient(180deg,#f3f8ff 0%,var(--bg) 60%);color:var(--dark);margin:0}
-        a{color:var(--primary)}
-
-        .navbar{background:linear-gradient(90deg, rgba(255,255,255,.8), rgba(255,255,255,.6));backdrop-filter: blur(6px);box-shadow: 0 8px 30px rgba(2,6,23,0.06)}
-        .brand{font-weight:800;color:var(--primary);letter-spacing:.6px}
-
-        /* Hero */
-        .hero{padding:5.5rem 0 3rem}
-        .hero h1{font-size:2.4rem;line-height:1.05}
-        .hero .lead{color:var(--muted);max-width:48rem}
-        .hero-visual{border-radius:22px;overflow:hidden;box-shadow:var(--card-shadow)}
-
-        /* Cards */
-        .card-house{border-radius:var(--radius);overflow:hidden;background:linear-gradient(180deg,white,#fbfdff);box-shadow:var(--card-shadow);transition:transform var(--transition),box-shadow var(--transition)}
-        .card-house:hover{transform:translateY(-10px);box-shadow:0 30px 60px rgba(11,94,215,0.08)}
-        .house-thumb{height:220px;object-fit:cover;width:100%;display:block}
-
-        .tag{display:inline-block;padding:.28rem .65rem;border-radius:999px;background:rgba(11,94,215,0.08);color:var(--primary);font-weight:700;font-size:.78rem}
-
-        .filters .btn{border-radius:999px}
-
-        #mapPlaceholder{height:320px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:linear-gradient(135deg,#eaf8ff,#ffffff)}
-
-        /* Quiz */
-        .quiz-card{border-radius:14px;padding:1.25rem;background:linear-gradient(180deg,#ffffff,#fbfdff);box-shadow:var(--card-shadow)}
-        .option{cursor:pointer;padding:.9rem;border-radius:10px;border:1px solid transparent;transition:all 160ms ease;user-select:none}
-        .option:hover{background:#f5f9ff;transform:translateY(-2px)}
-        .option.selected{border-color:var(--primary);background:linear-gradient(90deg,rgba(11,94,215,0.04),rgba(13,202,240,0.03))}
-        .option.correct{background:#e6fbef;border-color:#28a745}
-        .option.wrong{background:#ffefee;border-color:#dc3545}
-
-        .progress-bar-quiz{height:10px;border-radius:999px;overflow:hidden;background:#e9f2ff}
-        .progress-bar-quiz > div{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width 350ms ease}
-
-        /* Footer */
-        .footer{background:linear-gradient(180deg,#06102a,#07102a);color:#cbd5e1;padding:3.25rem 0;margin-top:3rem}
-
-        /* Agents / Testimonials */
-        .agent-card{border-radius:12px;padding:1rem;background:white;box-shadow:var(--card-shadow);text-align:center}
-
-        @media(max-width:768px){.hero{padding:3.5rem 0}.house-thumb{height:180px}}
-        /* Reveal on scroll */
-        .reveal{opacity:0;transform:translateY(18px);transition:opacity 600ms ease, transform 600ms ease}
-        .reveal.visible{opacity:1;transform:none}
-
-        /* Search suggestions */
-        #searchSuggestions{position:absolute;z-index:1060;max-height:260px;overflow:auto;width:100%;box-shadow:0 8px 30px rgba(2,6,23,0.08);border-radius:8px}
-        #searchSuggestions .list-group-item{cursor:pointer}
-
-        /* Floating action button */
-        .fab{position:fixed;right:24px;bottom:24px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(2,6,23,0.12);z-index:1070}
-
-        /* Lightbox */
-        .lightbox-img{max-height:80vh;object-fit:contain}
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Cinzel:wght@400;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <a class="navbar-brand brand" href="#">CasaShop</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navmenu">
-                <ul class="navbar-nav ms-auto align-items-lg-center">
-                    <li class="nav-item"><a class="nav-link" href="#homes">Casas</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#gallery">Galeria</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#quiz">Quiz</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contacto</a></li>
-                    <li class="nav-item ms-2 d-none d-lg-block"><a class="btn btn-outline-primary" href="#homes">Ver Casas</a></li>
+    <div class="container">
+        <!-- Cabeçalho com Carrinho -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>Livraria Alma Literária</h1>
+                <p class="tagline">Literatura Portuguesa & Mundial</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" class="active">Início</a></li>
+                    <li><a href="#catalogo">Catálogo</a></li>
+                    <li><a href="#autores">Autores</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
                 </ul>
-            </div>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="mb-3">Encontre a casa dos seus sonhos — com estilo e confiança</h1>
-                    <p class="lead">CasaShop é um protótipo moderno para apresentar listagens com imagens de alta qualidade, filtros, um quiz interativo e componentes visuais polidos. Experimente a navegação, adicione favoritos e descubra propriedades inspiradoras.</p>
-                    <div class="mt-4">
-                        <a href="#homes" class="btn btn-primary me-2">Explorar Casas</a>
-                        <a href="#quiz" class="btn btn-outline-primary">Jogar Quiz</a>
+            </nav>
+            <div class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">0</span>
+                <div class="cart-dropdown">
+                    <div class="cart-items">
+                        <!-- Itens do carrinho serão inseridos aqui via JavaScript -->
                     </div>
-                    <div class="mt-4 d-flex gap-3">
-                        <div class="p-3 bg-white rounded-3" style="box-shadow:var(--card-shadow);width:140px;text-align:center">
-                            <small class="text-muted">Casas</small>
-                            <h4 id="statHouses">0</h4>
-                        </div>
-                        <div class="p-3 bg-white rounded-3" style="box-shadow:var(--card-shadow);width:140px;text-align:center">
-                            <small class="text-muted">Cidades</small>
-                            <h4 id="statCities">0</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mt-4 mt-lg-0">
-                    <div class="hero-visual">
-                        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-indicators"></div>
-                            <div class="carousel-inner"></div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Anterior</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Próximo</span>
-                            </button>
-                        </div>
+                    <div class="cart-total">
+                        <span>Total: €<span id="cart-total-amount">0.00</span></span>
+                        <button id="checkout-btn">Finalizar Compra</button>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main>
-        <section class="py-5" id="homes">
-            <div class="container">
-                <div class="row mb-4 align-items-center">
-                    <div class="col-md-8">
-                        <h2>Casas Disponíveis</h2>
-                        <p class="text-muted">Pesquise, filtre e descubra propriedades com imagens grandes, galeria e detalhes completos.</p>
-                    </div>
-                    <div class="col-md-4 text-md-end">
-                        <button id="openFavorites" class="btn btn-outline-secondary me-2"><i class="fa-regular fa-heart"></i> Favoritos <span id="favCount" class="badge bg-primary ms-2">0</span></button>
-                    </div>
-                </div>
-
-                <div class="row mb-3 search-row align-items-center">
-                    <div class="col-md-6 d-flex">
-                        <div style="position:relative;flex:1">
-                            <input id="searchInput" class="form-control me-2" placeholder="Procurar por cidade, nome ou preço...">
-                            <div id="searchSuggestions" class="list-group" style="display:none"></div>
+        <!-- Carrossel de Destaques -->
+        <section class="carousel-section">
+            <div class="carousel-container">
+                <div class="carousel">
+                    <div class="carousel-slide active">
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Livros Clássicos">
+                        <div class="carousel-caption">
+                            <h3>Clássicos da Literatura Mundial</h3>
+                            <p>Das obras portuguesas aos grandes romances internacionais</p>
                         </div>
-                        <select id="sortSelect" class="form-select" style="max-width:180px">
-                            <option value="default">Ordenar</option>
-                            <option value="price-asc">Preço ↑</option>
-                            <option value="price-desc">Preço ↓</option>
-                            <option value="area-desc">Área ↓</option>
-                        </select>
                     </div>
-                    <div class="col-md-6 text-md-end filters">
-                        <button class="btn btn-sm btn-outline-primary me-1 active" data-filter="all">Todos</button>
-                        <button class="btn btn-sm btn-outline-primary me-1" data-filter="apartment">Apartamento</button>
-                        <button class="btn btn-sm btn-outline-primary me-1" data-filter="house">Moradia</button>
-                        <button class="btn btn-sm btn-outline-primary me-1" data-filter="villa">Moradia Luxo</button>
-                        <button class="btn btn-sm btn-outline-primary me-1" data-filter="studio">Studio</button>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Novos Lançamentos">
+                        <div class="carousel-caption">
+                            <h3>Novos Lançamentos</h3>
+                            <p>As últimas edições dos autores contemporâneos</p>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Literatura Portuguesa">
+                        <div class="carousel-caption">
+                            <h3>Literatura Portuguesa</h3>
+                            <p>Do século XIX aos autores contemporâneos</p>
+                        </div>
                     </div>
                 </div>
-
-                <div class="row" id="housesContainer"></div>
-
-                <div class="row mt-5 g-4">
-                    <div class="col-lg-8">
-                        <h5>Localização</h5>
-                        <div id="mapPlaceholder">Mapa interativo simulador (ex: Google Maps)</div>
-                    </div>
-                    <div class="col-lg-4">
-                        <h5>Detalhes rápidos</h5>
-                        <ul class="list-unstyled">
-                            <li><strong>Casas listadas:</strong> <span id="totalHouses">0</span></li>
-                            <li><strong>Cidades disponíveis:</strong> <span id="totalCities">0</span></li>
-                            <li><strong>Mín. Preço:</strong> <span id="minPrice">—</span></li>
-                            <li><strong>Máx. Preço:</strong> <span id="maxPrice">—</span></li>
-                        </ul>
-                    </div>
+                <button class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+                <div class="carousel-indicators">
+                    <span class="indicator active"></span>
+                    <span class="indicator"></span>
+                    <span class="indicator"></span>
                 </div>
             </div>
         </section>
 
-        <section class="py-5 bg-white" id="gallery">
-            <div class="container">
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <h2>Galeria Inspiradora</h2>
-                        <p class="text-muted">Uma seleção de imagens para inspirar estilos e decorações.</p>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-4"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded-3" loading="lazy"></div>
-                    <div class="col-md-4"><img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded-3" loading="lazy"></div>
-                    <div class="col-md-4"><img src="https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded-3" loading="lazy"></div>
-                    <div class="col-md-4"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded-3" loading="lazy"></div>
-                    <div class="col-md-4"><img src="https://images.unsplash.com/photo-1533099263-4a3a03c5f7f7?auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded-3" loading="lazy"></div>
-                    <div class="col-md-4"><img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded-3" loading="lazy"></div>
-                </div>
+        <!-- Catálogo de Livros -->
+        <section class="catalog-section" id="catalogo">
+            <h2>Catálogo de Livros</h2>
+            <p class="section-subtitle">Descubra obras de autores portugueses e internacionais</p>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="portugues">Autores Portugueses</button>
+                <button class="filter-btn" data-filter="internacional">Autores Internacionais</button>
+                <button class="filter-btn" data-filter="classico">Clássicos</button>
+                <button class="filter-btn" data-filter="contemporaneo">Contemporâneos</button>
+            </div>
+            
+            <div class="catalog-grid">
+                <!-- Livros serão inseridos aqui via JavaScript -->
             </div>
         </section>
 
-        <section class="py-5" id="quiz">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <h2>Quiz Interativo: Teste os seus conhecimentos de JavaScript</h2>
-                        <p class="text-muted">Quiz renovado com feedback imediato, barra de progresso, tempo por questão e revisão final.</p>
-
-                        <div class="quiz-card mt-3" id="quizCard">
-                            <div class="mb-3">
-                                <div class="progress-bar-quiz" aria-hidden>
-                                    <div id="quizProgressBar" style="width:0%"></div>
-                                </div>
-                                <div class="d-flex justify-content-between mt-2"><small id="quizProgress">Questão 0 / 0</small><small id="timer">--:--</small></div>
-                            </div>
-                            <div id="quizQuestionArea"></div>
-                            <div class="mt-3 d-flex justify-content-between align-items-center">
-                                <div><small id="quizHint" class="text-muted"></small></div>
-                                <div>
-                                    <button id="nextBtn" class="btn btn-primary btn-sm">Próxima</button>
-                                    <button id="restartBtn" class="btn btn-outline-secondary btn-sm">Recomeçar</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="confetti" aria-hidden></div>
-                    </div>
-                    <div class="col-lg-4 mt-4 mt-lg-0">
-                        <h5>Pontuação</h5>
-                        <div class="p-3 bg-light rounded-3 text-center">
-                            <h3 id="score">0</h3>
-                            <p class="mb-0 text-muted">Pontos</p>
-                        </div>
-                        <div class="mt-3">
-                            <h6>Resumo</h6>
-                            <ul id="quizSummary" class="list-unstyled small text-muted"></ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-5" id="contact">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <h2>Contacto</h2>
-                        <p class="text-muted">Preencha o formulário para nos contactar. O CAPTCHA é gerado e validado em JavaScript.</p>
-
-                        <div class="card p-4" style="border-radius:12px;box-shadow:var(--card-shadow)">
-                            <form id="contactForm">
-                                <div class="mb-3">
-                                    <input id="name" class="form-control" placeholder="Nome" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input id="email" type="email" class="form-control" placeholder="Email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <textarea id="message" class="form-control" rows="4" placeholder="Mensagem" required></textarea>
-                                </div>
-
-                                <div class="d-flex align-items-center mb-3">
-                                    <div id="captchaCode" class="me-3" style="font-family:monospace;background:#fff;padding:.5rem 1rem;border-radius:8px;border:1px solid #e6eefb">AB12CD</div>
-                                    <button type="button" id="refreshCaptcha" class="btn btn-outline-secondary btn-sm me-3"><i class="fa-solid fa-rotate"></i></button>
-                                    <input id="captchaInput" class="form-control" placeholder="Escreva o código" style="max-width:260px" required>
-                                </div>
-
-                                <div class="d-grid">
-                                    <button class="btn btn-primary" type="submit">Enviar Mensagem</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 mt-4 mt-lg-0">
-                        <h5>Informações</h5>
-                        <p class="text-muted">CasaShop — Loja de Casas (exemplo escolar). Endereço fictício.</p>
-                        <ul class="list-unstyled">
-                            <li><i class="fa-regular fa-envelope me-2"></i> contacto@casashop.example</li>
-                            <li><i class="fa-solid fa-phone me-2"></i> +351 900 000 000</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container text-center">
-            <p class="mb-0">&copy; 2025 CasaShop — Projeto Escolar. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <!-- Modal: House details + carousel -->
-    <div class="modal fade" id="houseModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
+        <!-- Modal de Detalhes do Livro -->
+        <div class="modal" id="bookModal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 id="modalTitle" class="modal-title">Casa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div id="modalCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
-                                <div class="carousel-inner"></div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <h5 id="modalTitleSide">Detalhes</h5>
-                            <p id="modalDesc"></p>
-                            <ul id="modalSpecs" class="list-unstyled"></ul>
-                            <div class="d-grid mt-3">
-                                <button class="btn btn-outline-secondary" id="favToggle"><i class="fa-regular fa-heart"></i> Favoritar</button>
-                                <button class="btn btn-primary mt-2" data-bs-dismiss="modal">Fechar</button>
-                            </div>
-                        </div>
-                    </div>
+                <span class="close-modal">&times;</span>
+                <div class="book-modal-content">
+                    <!-- Conteúdo será preenchido via JavaScript -->
                 </div>
             </div>
         </div>
+
+        <!-- Modal do Carrinho -->
+        <div class="modal" id="cartModal">
+            <div class="modal-content cart-modal">
+                <span class="close-modal">&times;</span>
+                <h2>Seu Carrinho</h2>
+                <div class="cart-items-modal">
+                    <!-- Itens do carrinho serão inseridos aqui -->
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>€<span id="subtotal">0.00</span></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Portes:</span>
+                        <span>€<span id="shipping">3.50</span></span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>€<span id="total">3.50</span></span>
+                    </div>
+                    <button id="proceed-checkout" class="checkout-btn">Prosseguir para Pagamento</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Checkout -->
+        <div class="modal" id="checkoutModal">
+            <div class="modal-content checkout-modal">
+                <span class="close-modal">&times;</span>
+                <h2>Finalizar Compra</h2>
+                
+                <div class="checkout-steps">
+                    <div class="step active">1. Envio</div>
+                    <div class="step">2. Pagamento</div>
+                    <div class="step">3. Confirmação</div>
+                </div>
+                
+                <form id="checkoutForm" class="checkout-form">
+                    <div class="form-step active" id="step1">
+                        <h3>Informações de Envio</h3>
+                        <div class="form-group">
+                            <label for="name">Nome Completo *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Morada *</label>
+                            <textarea id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">Cidade *</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="postal">Código Postal *</label>
+                                <input type="text" id="postal" name="postal" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">País *</label>
+                            <select id="country" name="country" required>
+                                <option value="portugal">Portugal</option>
+                                <option value="espanha">Espanha</option>
+                                <option value="franca">França</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-next">Continuar para Pagamento</button>
+                    </div>
+                    
+                    <div class="form-step" id="step2">
+                        <h3>Método de Pagamento</h3>
+                        <div class="payment-methods">
+                            <div class="payment-method">
+                                <input type="radio" id="credit-card" name="payment" value="cartao" checked>
+                                <label for="credit-card">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Cartão de Crédito/Débito</span>
+                                </label>
+                            </div>
+                            <div class="payment-method">
+                                <input type="radio" id="mbway" name="payment" value="mbway">
+                                <label for="mbway">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>MB Way</span>
+                                </label>
+                            </div>
+                            <div class="payment-method">
+                                <input type="radio" id="transferencia" name="payment" value="transferencia">
+                                <label for="transferencia">
+                                    <i class="fas fa-university"></i>
+                                    <span>Transferência Bancária</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-details" id="credit-card-details">
+                            <div class="form-group">
+                                <label for="card-number">Número do Cartão *</label>
+                                <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiry">Validade *</label>
+                                    <input type="text" id="expiry" placeholder="MM/AA">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV *</label>
+                                    <input type="text" id="cvv" placeholder="123">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn-prev">Voltar</button>
+                            <button type="button" class="btn-next">Continuar para Confirmação</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-step" id="step3">
+                        <h3>Resumo da Encomenda</h3>
+                        <div class="order-summary">
+                            <!-- Resumo será preenchido via JavaScript -->
+                        </div>
+                        
+                        <div class="terms-agreement">
+                            <input type="checkbox" id="terms" required>
+                            <label for="terms">Aceito os Termos e Condições *</label>
+                        </div>
+
+                        <!-- Captcha de imagem antes de confirmar compra -->
+                        <div class="form-group captcha-group">
+                            <label for="checkout-captcha-input">Captcha: escreva os caracteres que vê na imagem</label>
+                            <div class="d-flex align-items-center" style="gap:12px; margin-top:8px; margin-bottom:8px;">
+                                <canvas id="checkout-captcha-canvas" width="200" height="60" style="border:1px solid #d4b896;border-radius:6px;background:#fff"></canvas>
+                                <button type="button" id="refresh-checkout-captcha" class="btn-next" style="padding:8px 12px;height:40px;">Mudar imagem</button>
+                            </div>
+                            <input type="text" id="checkout-captcha-input" name="checkout-captcha" required placeholder="Escreva os caracteres" style="padding:10px; width:100%; box-sizing:border-box;">
+                            <div id="checkout-captcha-error" style="color:#dc3545; font-size:0.9rem; margin-top:6px; display:none;"></div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn-prev">Voltar</button>
+                            <button type="submit" class="btn-submit">Confirmar Compra</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quiz Literário -->
+        <section class="quiz-section">
+            <h2>Quiz Literário</h2>
+            <p class="section-subtitle">Teste os seus conhecimentos sobre literatura portuguesa e mundial</p>
+            
+            <div class="quiz-container">
+                <div class="quiz-progress">
+                    <div class="progress-bar" id="quizProgress"></div>
+                    <div class="progress-text">Pergunta <span id="currentQuestion">1</span> de 5</div>
+                </div>
+                
+                <div class="quiz-content" id="quizContent">
+                    <!-- Conteúdo do quiz será preenchido via JavaScript -->
+                </div>
+                
+                <div class="quiz-navigation">
+                    <button id="prevQuestion" class="nav-btn" disabled>Anterior</button>
+                    <button id="nextQuestion" class="nav-btn">Próxima</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rodapé -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Livraria Alma Literária</h4>
+                    <p>Especializada em literatura portuguesa e internacional desde 1995.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Horário</h4>
+                    <p>Segunda a Sexta: 9h às 19h</p>
+                    <p>Sábado: 10h às 18h</p>
+                    <p>Domingo: Encerrado</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Rua das Letras, 123, Lisboa</p>
+                    <p><i class="fas fa-phone"></i> +351 21 123 4567</p>
+                    <p><i class="fas fa-envelope"></i> info@almaliteraria.pt</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Livraria Alma Literária. Todos os direitos reservados.</p>
+            </div>
+        </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j7kDz7fM2Qv3bQxjKkQp6bE2w5rKk6tG1A9g8kM=" crossorigin=""></script>
     <script>
-        // Expanded list of houses with more images to enrich the page (many items to increase file length)
-        const houses = [
-            { id:1, title:'Moradia Solar', type:'house', city:'Porto', price:450000, area:220, images:[
-                'https://images.unsplash.com/photo-1560185127-6c1d4b4b1d3a?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Moradia luminosa com grande jardim e painéis solares integrados, cozinha open-space e ligação a terraços.'},
-            { id:2, title:'Apartamento Central', type:'apartment', city:'Lisboa', price:320000, area:95, images:[
-                'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Apartamento moderno no centro, varanda ampla, próximo de transporte público.'},
-            { id:3, title:'Villa do Bosque', type:'villa', city:'Faro', price:980000, area:420, images:[
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1533099263-4a3a03c5f7f7?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Villa de luxo com piscina, cinema e vistas imbatíveis sobre o bosque.'},
-            { id:4, title:'T1 Acolhedor', type:'apartment', city:'Coimbra', price:145000, area:48, images:[
-                'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Pequeno apartamento ideal para estudantes ou investimento de arrendamento.'},
-            { id:5, title:'Moradia do Lago', type:'house', city:'Braga', price:620000, area:300, images:[
-                'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1505692794400-3e1b9c6d3b6e?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Casa com acesso a lago privado, jardim paisagístico e garagem para barcos pequenos.'},
-            { id:6, title:'Penthouse Vista Mar', type:'apartment', city:'Cascais', price:1250000, area:180, images:[
-                'https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Penthouse com vista mar, terraço 360º e acabamentos premium.'},
-            { id:7, title:'Studio Minimal', type:'studio', city:'Aveiro', price:98000, area:32, images:[
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Studio compacto com design minimalista e boa luminosidade.'},
-            { id:8, title:'Quinta Tradicional', type:'house', city:'Évora', price:780000, area:1100, images:[
-                'https://images.unsplash.com/photo-1472220625704-91e1462799b2?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Quinta tradicional com oliveiras, adega e espaços para eventos.'},
-            { id:9, title:'Casa na Costa', type:'villa', city:'Algarve', price:1450000, area:520, images:[
-                'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1600&q=80',
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Moradia de luxo com piscina infinita, jardim e acesso à praia.'},
-            { id:10, title:'Apartamento Vintage', type:'apartment', city:'Porto', price:275000, area:78, images:[
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Apartamento com traços clássicos recuperados e muita personalidade.'},
-            { id:11, title:'Loft Industrial', type:'studio', city:'Lisboa', price:410000, area:110, images:[
-                'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Loft com pé direito alto, mezzanine e acabamentos industriais.'},
-            { id:12, title:'Casa de Campo Moderna', type:'house', city:'Serra da Estrela', price:520000, area:260, images:[
-                'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Refúgio de montanha, ideal para férias e aluguer sazonal.'},
-            { id:13, title:'Moradia Familiar', type:'house', city:'Setúbal', price:415000, area:210, images:[
-                'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Espaçosa, com áreas sociais grandes e quintal para crianças.'},
-            { id:14, title:'Apartamento Novo', type:'apartment', city:'Faro', price:235000, area:68, images:[
-                'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Apartamento em condomínio recente com piscina e ginásio.'},
-            { id:15, title:'Casa Histórica', type:'house', city:'Bragança', price:199000, area:150, images:[
-                'https://images.unsplash.com/photo-1472220625704-91e1462799b2?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Casa com elementos históricos, ideal para restauro ou projeto cultural.'},
-            { id:16, title:'Villa Minimalista', type:'villa', city:'Lagos', price:890000, area:350, images:[
-                'https://images.unsplash.com/photo-1505691723518-36a9c6fbe1aa?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Villa com linhas minimalistas, piscina e espaços abertos.'},
-            { id:17, title:'Townhouse Urbana', type:'house', city:'Leiria', price:305000, area:160, images:[
-                'https://images.unsplash.com/photo-1560185127-6c1d4b4b1d3a?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Moradia em banda, com garagem e pequeno jardim privado.'},
-            { id:18, title:'Moradia Renovada', type:'house', city:'Viana do Castelo', price:365000, area:200, images:[
-                'https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Renovada recentemente com materiais sustentáveis.'},
-            { id:19, title:'Apartamento Estúdio', type:'studio', city:'Funchal', price:122000, area:36, images:[
-                'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Estúdio com vista para o mar, ideal para investimento.'},
-            { id:20, title:'Casa de Praia', type:'house', city:'Vila Nova de Milfontes', price:450000, area:140, images:[
-                'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1600&q=80'
-            ], desc:'Casa perto da praia com acesso direto e espaço para hóspedes.'}
+        // Dados dos livros
+        const books = [
+            {
+                id: 1,
+                title: "Os Maias",
+                author: "Eça de Queirós",
+                nationality: "portugues",
+                category: "classico",
+                price: 18.90,
+                rating: 4.8,
+                description: "Considerada a obra-prima de Eça de Queirós, retrata a decadência da alta burguesia lisboeta do século XIX através da história da família Maia.",
+                details: {
+                    year: 1888,
+                    pages: 672,
+                    language: "Português",
+                    publisher: "Livros do Brasil",
+                    isbn: "978-972-38-1234-5"
+                },
+                image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 2,
+                title: "1984",
+                author: "George Orwell",
+                nationality: "internacional",
+                category: "classico",
+                price: 15.50,
+                rating: 4.9,
+                description: "Um dos romances mais influentes do século XX, que introduziu conceitos como o Grande Irmão e a Polícia do Pensamento.",
+                details: {
+                    year: 1949,
+                    pages: 328,
+                    language: "Português",
+                    publisher: "Antígona",
+                    isbn: "978-972-608-123-4"
+                },
+                image: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 3,
+                title: "Ensaio sobre a Cegueira",
+                author: "José Saramago",
+                nationality: "portugues",
+                category: "contemporaneo",
+                price: 22.00,
+                rating: 4.7,
+                description: "Romance distópico que narra uma epidemia de cegueira branca que se espalha por uma cidade não identificada.",
+                details: {
+                    year: 1995,
+                    pages: 310,
+                    language: "Português",
+                    publisher: "Caminho",
+                    isbn: "978-972-21-1234-6"
+                },
+                image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 4,
+                title: "Orgulho e Preconceito",
+                author: "Jane Austen",
+                nationality: "internacional",
+                category: "classico",
+                price: 14.90,
+                rating: 4.8,
+                description: "Considerada a primeira comédia romântica na literatura inglesa, acompanha a vida de Elizabeth Bennet e sua família.",
+                details: {
+                    year: 1813,
+                    pages: 432,
+                    language: "Português",
+                    publisher: "Relógio D'Água",
+                    isbn: "978-972-708-123-7"
+                },
+                image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 5,
+                title: "O Ano da Morte de Ricardo Reis",
+                author: "José Saramago",
+                nationality: "portugues",
+                category: "contemporaneo",
+                price: 19.90,
+                rating: 4.6,
+                description: "Romance que acompanha o regresso a Lisboa de Ricardo Reis, um dos heterónimos de Fernando Pessoa.",
+                details: {
+                    year: 1984,
+                    pages: 416,
+                    language: "Português",
+                    publisher: "Caminho",
+                    isbn: "978-972-21-1235-7"
+                },
+                image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 6,
+                title: "Crime e Castigo",
+                author: "Fiódor Dostoiévski",
+                nationality: "internacional",
+                category: "classico",
+                price: 17.50,
+                rating: 4.9,
+                description: "Romance psicológico que explora a mente de um estudante que comete um assassinato e lida com a culpa subsequente.",
+                details: {
+                    year: 1866,
+                    pages: 544,
+                    language: "Português",
+                    publisher: "Editorial Presença",
+                    isbn: "978-972-23-1234-8"
+                },
+                image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 7,
+                title: "Livro do Desassossego",
+                author: "Fernando Pessoa (Bernardo Soares)",
+                nationality: "portugues",
+                category: "classico",
+                price: 24.90,
+                rating: 4.8,
+                description: "Obra fragmentária considerada uma das maiores obras da literatura portuguesa do século XX.",
+                details: {
+                    year: 1982,
+                    pages: 528,
+                    language: "Português",
+                    publisher: "Assírio & Alvim",
+                    isbn: "978-972-37-1234-9"
+                },
+                image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 8,
+                title: "Cem Anos de Solidão",
+                author: "Gabriel García Márquez",
+                nationality: "internacional",
+                category: "contemporaneo",
+                price: 20.00,
+                rating: 4.9,
+                description: "Obra-prima do realismo mágico que narra a história da família Buendía ao longo de sete gerações.",
+                details: {
+                    year: 1967,
+                    pages: 448,
+                    language: "Português",
+                    publisher: "Dom Quixote",
+                    isbn: "978-972-20-1234-0"
+                },
+                image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            }
         ];
 
-        // Initialize hero carousel with first featured houses
-        (function initHero(){
-            const carousel = document.querySelector('#heroCarousel .carousel-inner');
-            const indicators = document.querySelector('#heroCarousel .carousel-indicators');
-            houses.slice(0,5).forEach((h,i)=>{
-                const item = document.createElement('div');
-                item.className = 'carousel-item'+(i===0? ' active':'');
-                item.innerHTML = `
-                    <img src="${h.images[0]}" class="d-block w-100" style="height:360px;object-fit:cover" loading="lazy">
-                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded-3 p-3">
-                        <h5>${h.title}</h5>
-                        <p class="mb-0">${h.city} — €${h.price.toLocaleString()}</p>
+        // Perguntas do quiz sobre literatura portuguesa e mundial
+        const quizQuestions = [
+            {
+                question: "Quem escreveu 'Os Lusíadas', o épico nacional português?",
+                options: [
+                    { text: "Luís de Camões", correct: true },
+                    { text: "Fernando Pessoa", correct: false },
+                    { text: "Eça de Queirós", correct: false },
+                    { text: "Almeida Garrett", correct: false }
+                ]
+            },
+            {
+                question: "Qual destas obras foi escrita por Virginia Woolf?",
+                options: [
+                    { text: "Mrs. Dalloway", correct: true },
+                    { text: "O Velho e o Mar", correct: false },
+                    { text: "A Metamorfose", correct: false },
+                    { text: "Os Miseráveis", correct: false }
+                ]
+            },
+            {
+                question: "Qual destes é um heterónimo de Fernando Pessoa?",
+                options: [
+                    { text: "Álvaro de Campos", correct: true },
+                    { text: "Miguel Torga", correct: false },
+                    { text: "José Saramago", correct: false },
+                    { text: "Sophia de Mello Breyner", correct: false }
+                ]
+            },
+            {
+                question: "Quem escreveu 'Dom Quixote', considerado o primeiro romance moderno?",
+                options: [
+                    { text: "Miguel de Cervantes", correct: true },
+                    { text: "William Shakespeare", correct: false },
+                    { text: "Victor Hugo", correct: false },
+                    { text: "Fiódor Dostoiévski", correct: false }
+                ]
+            },
+            {
+                question: "Qual destas obras pertence à literatura portuguesa do século XIX?",
+                options: [
+                    { text: "Amor de Perdição", correct: true },
+                    { text: "Ensaio sobre a Cegueira", correct: false },
+                    { text: "Memorial do Convento", correct: false },
+                    { text: "Os Maias", correct: true }
+                ]
+            }
+        ];
+    </script>
+    <script>
+        // Carrinho de compras
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentQuestion = 0;
+        let quizScore = 0;
+        let userAnswers = [];
+        // Captcha para checkout
+        let checkoutCaptchaAnswer = null;
+
+        // Inicialização quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', function() {
+            initCarousel();
+            renderBooks();
+            initFilters();
+            initCart();
+            initQuiz();
+            initModal();
+            initCheckout();
+        });
+
+        // Carrossel
+        function initCarousel() {
+            const carousel = document.querySelector('.carousel');
+            const slides = document.querySelectorAll('.carousel-slide');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const indicators = document.querySelectorAll('.indicator');
+            let currentSlide = 0;
+
+            function updateCarousel() {
+                carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === currentSlide);
+                });
+            }
+
+            prevBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateCarousel();
+            });
+
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    updateCarousel();
+                });
+            });
+
+            // Auto avanço
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateCarousel();
+            }, 5000);
+        }
+
+        // Renderizar livros
+        function renderBooks(filter = 'todos') {
+            const catalogGrid = document.querySelector('.catalog-grid');
+            catalogGrid.innerHTML = '';
+
+            const filteredBooks = filter === 'todos' 
+                ? books 
+                : books.filter(book => book.nationality === filter || book.category === filter);
+
+            filteredBooks.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.dataset.id = book.id;
+                bookCard.dataset.nationality = book.nationality;
+                bookCard.dataset.category = book.category;
+
+                bookCard.innerHTML = `
+                    <div class="book-image">
+                        <img src="${book.image}" alt="${book.title}">
+                        ${book.nationality === 'portugues' ? '<span class="flag-tag">🇵🇹 Português</span>' : '<span class="flag-tag">🌍 Internacional</span>'}
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">${book.title}</h3>
+                        <p class="book-author">${book.author}</p>
+                        <div class="book-rating">
+                            ${generateStars(book.rating)}
+                            <span class="rating-value">${book.rating}</span>
+                        </div>
+                        <p class="book-description">${book.description.substring(0, 100)}...</p>
+                        <div class="book-footer">
+                            <span class="book-price">€${book.price.toFixed(2)}</span>
+                            <button class="btn-add-to-cart" data-id="${book.id}">
+                                <i class="fas fa-cart-plus"></i> Adicionar
+                            </button>
+                        </div>
                     </div>
                 `;
-                carousel.appendChild(item);
 
-                const btn = document.createElement('button');
-                btn.type='button';
-                if(i===0) btn.className='active';
-                btn.setAttribute('data-bs-target','#heroCarousel');
-                btn.setAttribute('data-bs-slide-to',String(i));
-                indicators.appendChild(btn);
+                catalogGrid.appendChild(bookCard);
             });
-        })();
 
-        const housesContainer = document.getElementById('housesContainer');
-        const totalHousesEl = document.getElementById('totalHouses');
-        const totalCitiesEl = document.getElementById('totalCities');
-        const statHouses = document.getElementById('statHouses');
-        const statCities = document.getElementById('statCities');
-        const minPriceEl = document.getElementById('minPrice');
-        const maxPriceEl = document.getElementById('maxPrice');
+            // Adicionar eventos aos botões
+            document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const bookId = parseInt(this.dataset.id);
+                    addToCart(bookId);
+                });
+            });
 
-        function renderHouses(list){
-            housesContainer.innerHTML = '';
-            list.forEach(h => {
-                const col = document.createElement('div');
-                col.className = 'col-md-6 col-lg-4 mb-4';
-                col.innerHTML = `
-                    <article class="card-house bg-white">
-                        <img loading="lazy" src="${h.images[0]}" alt="${h.title}" class="house-thumb">
-                        <div class="p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="mb-0">${h.title}</h5>
-                                <span class="tag text-uppercase">${h.type}</span>
+            // Adicionar evento para abrir modal ao clicar no card
+            document.querySelectorAll('.book-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const bookId = parseInt(this.dataset.id);
+                    openBookModal(bookId);
+                });
+            });
+        }
+
+        function generateStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i === fullStars && hasHalfStar) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // Filtros
+        function initFilters() {
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    const filter = this.dataset.filter;
+                    renderBooks(filter);
+                });
+            });
+        }
+
+        // Carrinho
+        function initCart() {
+            updateCartCount();
+            document.querySelector('.cart-icon').addEventListener('click', toggleCartDropdown);
+            document.getElementById('checkout-btn').addEventListener('click', openCartModal);
+        }
+
+        function addToCart(bookId) {
+            const book = books.find(b => b.id === bookId);
+            const existingItem = cart.find(item => item.id === bookId);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    price: book.price,
+                    image: book.image,
+                    quantity: 1
+                });
+            }
+
+            updateCartCount();
+            saveCart();
+            showNotification(`${book.title} adicionado ao carrinho!`);
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelector('.cart-count').textContent = totalItems;
+            
+            // Atualizar dropdown
+            updateCartDropdown();
+        }
+
+        function updateCartDropdown() {
+            const cartItems = document.querySelector('.cart-items');
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('cart-total-amount').textContent = totalAmount.toFixed(2);
+            
+            cartItems.innerHTML = '';
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="empty-cart">O carrinho está vazio</p>';
+                return;
+            }
+
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.title}">
+                    <div class="cart-item-info">
+                        <h4>${item.title}</h4>
+                        <p>${item.author}</p>
+                        <div class="cart-item-controls">
+                            <button class="qty-btn" data-id="${item.id}" data-action="decrease">-</button>
+                            <span class="qty">${item.quantity}</span>
+                            <button class="qty-btn" data-id="${item.id}" data-action="increase">+</button>
+                            <span class="cart-item-price">€${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+
+            // Adicionar eventos aos botões de quantidade
+            document.querySelectorAll('.qty-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const bookId = parseInt(this.dataset.id);
+                    const action = this.dataset.action;
+                    
+                    if (action === 'increase') {
+                        addToCart(bookId);
+                    } else {
+                        removeFromCart(bookId);
+                    }
+                });
+            });
+        }
+
+        function removeFromCart(bookId) {
+            const itemIndex = cart.findIndex(item => item.id === bookId);
+            
+            if (itemIndex !== -1) {
+                if (cart[itemIndex].quantity > 1) {
+                    cart[itemIndex].quantity--;
+                } else {
+                    cart.splice(itemIndex, 1);
+                }
+                
+                updateCartCount();
+                saveCart();
+            }
+        }
+
+        function toggleCartDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.querySelector('.cart-dropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        // Modal do livro
+        function initModal() {
+            const modal = document.getElementById('bookModal');
+            const closeBtn = modal.querySelector('.close-modal');
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('show');
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
+
+        function openBookModal(bookId) {
+            const book = books.find(b => b.id === bookId);
+            const modal = document.getElementById('bookModal');
+            const modalContent = modal.querySelector('.book-modal-content');
+
+            modalContent.innerHTML = `
+                <div class="book-modal-image">
+                    <img src="${book.image}" alt="${book.title}">
+                </div>
+                <div class="book-modal-info">
+                    <h2>${book.title}</h2>
+                    <p class="book-modal-author">${book.author}</p>
+                    <div class="book-modal-rating">
+                        ${generateStars(book.rating)}
+                        <span class="rating-value">${book.rating}</span>
+                        <span class="review-count">(248 avaliações)</span>
+                    </div>
+                    <p class="book-modal-description">${book.description}</p>
+                    
+                    <div class="book-details">
+                        <h4>Detalhes do Livro</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Ano:</span>
+                                <span class="detail-value">${book.details.year}</span>
                             </div>
-                            <p class="text-muted small mb-2">${h.city} — ${h.area} m²</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <strong>€${h.price.toLocaleString()}</strong>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary me-1" data-id="${h.id}" data-action="details">Ver Detalhes</button>
-                                    <button class="btn btn-sm btn-outline-secondary" data-id="${h.id}" data-action="fav"><i class="fa-regular fa-heart"></i></button>
-                                </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Páginas:</span>
+                                <span class="detail-value">${book.details.pages}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Idioma:</span>
+                                <span class="detail-value">${book.details.language}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Editora:</span>
+                                <span class="detail-value">${book.details.publisher}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">ISBN:</span>
+                                <span class="detail-value">${book.details.isbn}</span>
                             </div>
                         </div>
-                    </article>
-                `;
-                housesContainer.appendChild(col);
+                    </div>
+                    
+                    <div class="book-modal-actions">
+                        <div class="price-container">
+                            <span class="book-modal-price">€${book.price.toFixed(2)}</span>
+                            <span class="stock-status">Em stock</span>
+                        </div>
+                        <button class="btn-add-to-cart-modal" data-id="${book.id}">
+                            <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Adicionar evento ao botão no modal
+            modal.querySelector('.btn-add-to-cart-modal').addEventListener('click', function(e) {
+                e.stopPropagation();
+                addToCart(book.id);
+                modal.classList.remove('show');
             });
-            totalHousesEl.textContent = list.length;
-            const cities = [...new Set(list.map(x=>x.city))];
-            totalCitiesEl.textContent = cities.length;
-            statHouses.textContent = houses.length;
-            statCities.textContent = cities.length;
-            const prices = list.map(x=>x.price);
-            minPriceEl.textContent = prices.length? '€'+Math.min(...prices).toLocaleString(): '—';
-            maxPriceEl.textContent = prices.length? '€'+Math.max(...prices).toLocaleString(): '—';
+
+            modal.classList.add('show');
         }
 
-        renderHouses(houses);
+        // Modal do carrinho
+        function openCartModal() {
+            const modal = document.getElementById('cartModal');
+            const cartItemsModal = modal.querySelector('.cart-items-modal');
+            
+            document.querySelector('.cart-dropdown').classList.remove('show');
+            
+            cartItemsModal.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItemsModal.innerHTML = '<p class="empty-cart-message">O seu carrinho está vazio</p>';
+            } else {
+                cart.forEach(item => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item-modal';
+                    cartItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.title}">
+                        <div class="cart-item-modal-info">
+                            <h4>${item.title}</h4>
+                            <p>${item.author}</p>
+                            <div class="cart-item-modal-controls">
+                                <button class="qty-btn-modal" data-id="${item.id}" data-action="decrease">-</button>
+                                <span class="qty-modal">${item.quantity}</span>
+                                <button class="qty-btn-modal" data-id="${item.id}" data-action="increase">+</button>
+                                <button class="remove-btn" data-id="${item.id}">Remover</button>
+                            </div>
+                        </div>
+                        <div class="cart-item-modal-price">
+                            €${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                    `;
+                    cartItemsModal.appendChild(cartItem);
+                });
 
-        document.querySelectorAll('.filters [data-filter]').forEach(btn=>{
-            btn.addEventListener('click', ()=>{
-                document.querySelectorAll('.filters [data-filter]').forEach(b=>b.classList.remove('active'));
-                btn.classList.add('active');
-                applyListState();
+                // Adicionar eventos
+                document.querySelectorAll('.qty-btn-modal').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const bookId = parseInt(this.dataset.id);
+                        const action = this.dataset.action;
+                        
+                        if (action === 'increase') {
+                            addToCart(bookId);
+                        } else {
+                            removeFromCart(bookId);
+                        }
+                        openCartModal(); // Recarregar modal
+                    });
+                });
+
+                document.querySelectorAll('.remove-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const bookId = parseInt(this.dataset.id);
+                        removeItemFromCart(bookId);
+                        openCartModal();
+                    });
+                });
+            }
+
+            // Atualizar total
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = 3.50;
+            const total = subtotal + shipping;
+
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+
+            modal.classList.add('show');
+
+            // Adicionar evento ao botão de checkout
+            document.getElementById('proceed-checkout').addEventListener('click', function() {
+                modal.classList.remove('show');
+                openCheckoutModal();
             });
-        });
 
-        document.getElementById('searchInput').addEventListener('input', applyListState);
-        document.getElementById('sortSelect').addEventListener('change', applyListState);
-
-        function applyListState(){
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const activeFilter = document.querySelector('.filters .active')?.getAttribute('data-filter') || 'all';
-            let list = houses.filter(h => {
-                if(activeFilter!=='all' && h.type!==activeFilter) return false;
-                if(!search) return true;
-                return h.title.toLowerCase().includes(search) || h.city.toLowerCase().includes(search) || String(h.price).includes(search);
+            // Fechar modal
+            modal.querySelector('.close-modal').addEventListener('click', () => {
+                modal.classList.remove('show');
             });
-            const sort = document.getElementById('sortSelect').value;
-            if(sort==='price-asc') list.sort((a,b)=>a.price-b.price);
-            if(sort==='price-desc') list.sort((a,b)=>b.price-a.price);
-            if(sort==='area-desc') list.sort((a,b)=>b.area-a.area);
-            renderHouses(list);
         }
 
-        const houseModal = new bootstrap.Modal(document.getElementById('houseModal'));
-        document.body.addEventListener('click', (e)=>{
-            const btn = e.target.closest('button');
-            if(!btn) return;
-            const id = btn.getAttribute('data-id');
-            const action = btn.getAttribute('data-action');
-            if(!id) return;
-            const h = houses.find(x=>String(x.id)===id);
-            if(action==='details') openDetails(h);
-            if(action==='fav') toggleFav(h,btn);
-        });
-
-        let favorites = JSON.parse(localStorage.getItem('favHouses')||'[]');
-        function updateFavCount(){document.getElementById('favCount').textContent = favorites.length}
-        updateFavCount();
-
-        function toggleFav(h,btn){
-            const idx = favorites.indexOf(h.id);
-            if(idx===-1) favorites.push(h.id); else favorites.splice(idx,1);
-            localStorage.setItem('favHouses',JSON.stringify(favorites));
-            updateFavCount();
-            const icon = btn.querySelector('i');
-            if(icon) icon.classList.toggle('fa-solid');
+        function removeItemFromCart(bookId) {
+            cart = cart.filter(item => item.id !== bookId);
+            updateCartCount();
+            saveCart();
         }
 
-        function openDetails(h){
-            document.getElementById('modalTitle').textContent = h.title+' — '+h.city;
-            document.getElementById('modalDesc').textContent = h.desc;
-            const specs = document.getElementById('modalSpecs'); specs.innerHTML = '';
-            specs.innerHTML = `<li>Preço: €${h.price.toLocaleString()}</li><li>Área: ${h.area} m²</li><li>Tipo: ${h.type}</li>`;
-            const inner = document.querySelector('#modalCarousel .carousel-inner'); inner.innerHTML='';
-            h.images.forEach((src,i)=>{
-                const it = document.createElement('div'); it.className='carousel-item'+(i===0?' active':'');
-                it.innerHTML = `<img src="${src}" class="d-block w-100" style="height:420px;object-fit:cover" loading="lazy">`;
-                inner.appendChild(it);
+        // Checkout
+        function initCheckout() {
+            const checkoutModal = document.getElementById('checkoutModal');
+            const closeBtn = checkoutModal.querySelector('.close-modal');
+            
+            closeBtn.addEventListener('click', () => {
+                checkoutModal.classList.remove('show');
             });
-            houseModal.show();
+
+            // Navegação entre passos
+            document.querySelectorAll('.btn-next').forEach(button => {
+                button.addEventListener('click', function() {
+                    const currentStep = this.closest('.form-step');
+                    const nextStepId = currentStep.id === 'step1' ? 'step2' : 
+                                     currentStep.id === 'step2' ? 'step3' : null;
+                    
+                    if (nextStepId) {
+                        currentStep.classList.remove('active');
+                        document.getElementById(nextStepId).classList.add('active');
+                        updateSteps(nextStepId);
+                        
+                        if (nextStepId === 'step3') {
+                            updateOrderSummary();
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.btn-prev').forEach(button => {
+                button.addEventListener('click', function() {
+                    const currentStep = this.closest('.form-step');
+                    const prevStepId = currentStep.id === 'step3' ? 'step2' : 
+                                     currentStep.id === 'step2' ? 'step1' : null;
+                    
+                    if (prevStepId) {
+                        currentStep.classList.remove('active');
+                        document.getElementById(prevStepId).classList.add('active');
+                        updateSteps(prevStepId);
+                    }
+                });
+            });
+
+            // Refresh captcha button (imagem)
+            const refreshBtn = document.getElementById('refresh-checkout-captcha');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    checkoutCaptchaAnswer = generateCheckoutCaptcha();
+                    const input = document.getElementById('checkout-captcha-input');
+                    const errEl = document.getElementById('checkout-captcha-error');
+                    if (input) input.value = '';
+                    if (errEl) { errEl.style.display = 'none'; }
+                });
+            }
+
+            // Métodos de pagamento
+            document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.querySelectorAll('.payment-details').forEach(details => {
+                        details.style.display = 'none';
+                    });
+                    
+                    if (this.value === 'cartao') {
+                        document.getElementById('credit-card-details').style.display = 'block';
+                    }
+                });
+            });
+
+            // Submissão do formulário (validação de captcha antes de processar)
+            document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const input = document.getElementById('checkout-captcha-input');
+                const errEl = document.getElementById('checkout-captcha-error');
+                if (!input) {
+                    processOrder();
+                    return;
+                }
+                const val = input.value.trim();
+                if (!val || val.toLowerCase() !== String(checkoutCaptchaAnswer).toLowerCase()) {
+                    // mostrar erro inline e notificação
+                    if (errEl) { errEl.textContent = 'Captcha incorreto. Tente novamente.'; errEl.style.display = 'block'; }
+                    showNotification('Captcha incorreto. Tente novamente.', 'error');
+                    // gerar novo captcha
+                    checkoutCaptchaAnswer = generateCheckoutCaptcha();
+                    input.value = '';
+                    return;
+                }
+
+                // tudo bem — processar encomenda
+                if (errEl) { errEl.style.display = 'none'; }
+                processOrder();
+            });
         }
 
-        document.getElementById('openFavorites').addEventListener('click', ()=>{
-            const list = houses.filter(h=>favorites.includes(h.id));
-            if(!list.length) return alert('Nenhum favorito.');
-            renderHouses(list);
-            window.location.href = '#homes';
-        });
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showNotification('Adicione produtos ao carrinho primeiro!', 'error');
+                return;
+            }
 
-        function genCaptcha(){
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.add('show');
+            // gerar captcha para este checkout
+            if (typeof generateCheckoutCaptcha === 'function') {
+                checkoutCaptchaAnswer = generateCheckoutCaptcha();
+                const input = document.getElementById('checkout-captcha-input');
+                if (input) input.value = '';
+            }
+            
+            // Resetar para o primeiro passo
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById('step1').classList.add('active');
+            updateSteps('step1');
+        }
+
+        // Gera um captcha de imagem para o checkout e desenha no canvas
+        function generateCheckoutCaptcha() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let out=''; for(let i=0;i<6;i++) out+=chars.charAt(Math.floor(Math.random()*chars.length));
-            return out;
+            const length = 5;
+            let text = '';
+            for (let i = 0; i < length; i++) {
+                text += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            const canvas = document.getElementById('checkout-captcha-canvas');
+            if (!canvas) return text;
+            const ctx = canvas.getContext('2d');
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Background
+            ctx.fillStyle = '#f7f3ee';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add noise lines
+            for (let i = 0; i < 6; i++) {
+                ctx.strokeStyle = `rgba(0,0,0,${Math.random() * 0.15})`;
+                ctx.lineWidth = 1 + Math.random() * 1.5;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.stroke();
+            }
+
+            // Draw text with per-letter rotation
+            const baseX = 18;
+            const baseY = canvas.height / 2 + 10;
+            for (let i = 0; i < text.length; i++) {
+                const ch = text.charAt(i);
+                const fontSize = 28 + Math.floor(Math.random() * 6);
+                ctx.font = `${fontSize}px serif`;
+                ctx.fillStyle = `rgba(${30 + Math.floor(Math.random()*80)}, ${20 + Math.floor(Math.random()*80)}, ${20 + Math.floor(Math.random()*80)}, 1)`;
+                const x = baseX + i * 34 + (Math.random() * 6 - 3);
+                const angle = (Math.random() * 20 - 10) * Math.PI / 180;
+                ctx.save();
+                ctx.translate(x, baseY);
+                ctx.rotate(angle);
+                ctx.fillText(ch, 0, 0);
+                ctx.restore();
+            }
+
+            // Add dots
+            for (let i = 0; i < 30; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.12})`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 1.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return text;
         }
-        let currentCaptcha = genCaptcha();
-        document.getElementById('captchaCode').textContent = currentCaptcha;
-        document.getElementById('refreshCaptcha').addEventListener('click', ()=>{
-            currentCaptcha = genCaptcha(); document.getElementById('captchaCode').textContent = currentCaptcha;
-        });
 
-        document.getElementById('contactForm').addEventListener('submit', function(e){
-            e.preventDefault();
-            const val = document.getElementById('captchaInput').value.trim();
-            if(val!==currentCaptcha){ alert('CAPTCHA incorreto. Tente novamente.'); currentCaptcha = genCaptcha(); document.getElementById('captchaCode').textContent = currentCaptcha; return; }
-            alert('Mensagem enviada (simulação). Obrigado!');
-            this.reset(); currentCaptcha = genCaptcha(); document.getElementById('captchaCode').textContent = currentCaptcha;
-        });
-
-        /* ---------------- Quiz logic (improved) ---------------- */
-        const quizQuestions = [
-            {q:'O que faz o operador === em JavaScript?', options:['Apenas comparação de valor','Comparação de valor e tipo','Atribuição','Nada'], a:1, explain:'=== compara valor e tipo, sem coerção de tipo.'},
-            {q:'Como declaras uma função em ES6 com arrow?', options:['function fn() {}','const fn = () => {}','let fn := {}','fn => {}'], a:1, explain:'Sintaxe de arrow function: const fn = () => {}.'},
-            {q:'Qual método converte um objeto em JSON string?', options:['JSON.parse','JSON.stringify','toString','Object.toJSON'], a:1, explain:'JSON.stringify converte em string JSON.'},
-            {q:'Qual palavra-chave define uma constante?', options:['var','let','const','static'], a:2, explain:'const declara uma constante cujo binding não muda.'},
-            {q:'Qual método devolve o comprimento de um array?', options:['arr.count','arr.size','arr.length','arr.len'], a:2, explain:'A propriedade length devolve o comprimento.'}
-        ];
-
-        let quizState = { index:0, score:0, answers:[], timeLeft:20, timerId:null };
-
-        function updateProgress(){
-            const el = document.getElementById('quizProgressBar');
-            const pct = Math.round((quizState.index / quizQuestions.length)*100);
-            el.style.width = pct + '%';
-            document.getElementById('quizProgress').textContent = `Questão ${Math.min(quizState.index+1, quizQuestions.length)} / ${quizQuestions.length}`;
-            document.getElementById('score').textContent = quizState.score;
+        function updateSteps(currentStep) {
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                
+                if (currentStep === 'step1' && index === 0) {
+                    step.classList.add('active');
+                } else if (currentStep === 'step2') {
+                    if (index < 1) step.classList.add('completed');
+                    if (index === 1) step.classList.add('active');
+                } else if (currentStep === 'step3') {
+                    if (index < 2) step.classList.add('completed');
+                    if (index === 2) step.classList.add('active');
+                }
+            });
         }
 
-        function startTimer(){
-            clearInterval(quizState.timerId);
-            quizState.timeLeft = 20;
-            document.getElementById('timer').textContent = formatTime(quizState.timeLeft);
-            quizState.timerId = setInterval(()=>{
-                quizState.timeLeft--;
-                document.getElementById('timer').textContent = formatTime(quizState.timeLeft);
-                if(quizState.timeLeft<=0){ clearInterval(quizState.timerId); autoNext(); }
-            },1000);
+        function updateOrderSummary() {
+            const summary = document.querySelector('.order-summary');
+            let html = '<div class="order-items">';
+            
+            cart.forEach(item => {
+                html += `
+                    <div class="order-item">
+                        <div class="order-item-info">
+                            <h5>${item.title}</h5>
+                            <p>${item.author}</p>
+                            <span>Qtd: ${item.quantity}</span>
+                        </div>
+                        <div class="order-item-price">
+                            €${(item.price * item.quantity).toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = 3.50;
+            const total = subtotal + shipping;
+            
+            html += '</div>';
+            html += `
+                <div class="order-totals">
+                    <div class="order-total-row">
+                        <span>Subtotal:</span>
+                        <span>€${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="order-total-row">
+                        <span>Portes:</span>
+                        <span>€${shipping.toFixed(2)}</span>
+                    </div>
+                    <div class="order-total-row total">
+                        <span>Total:</span>
+                        <span>€${total.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+            
+            summary.innerHTML = html;
         }
 
-        function formatTime(s){ const mm = Math.floor(s/60).toString().padStart(2,'0'); const ss = String(Math.max(0,s%60)).padStart(2,'0'); return `${mm}:${ss}` }
+        function processOrder() {
+            // Simular processamento
+            showNotification('Processando o seu pedido...', 'info');
+            
+            setTimeout(() => {
+                document.getElementById('checkoutModal').classList.remove('show');
+                
+                // Limpar carrinho
+                cart = [];
+                updateCartCount();
+                saveCart();
+                
+                // Mostrar confirmação
+                showNotification('Pedido realizado com sucesso! Obrigado pela sua compra.', 'success');
+            }, 2000);
+        }
 
-        function showQuestion(){
-            clearInterval(quizState.timerId);
-            const area = document.getElementById('quizQuestionArea'); area.innerHTML='';
-            const q = quizQuestions[quizState.index];
-            const h = document.createElement('h5'); h.textContent = q.q; area.appendChild(h);
-            const list = document.createElement('div'); list.className = 'mt-3';
-            q.options.forEach((opt,i)=>{
-                const div = document.createElement('div'); div.className='option mb-2'; div.textContent = opt; div.dataset.idx=i;
-                div.addEventListener('click', ()=>{
-                    document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
-                    div.classList.add('selected');
-                    quizState.selected = i;
+        // Quiz
+        function initQuiz() {
+            renderQuizQuestion();
+            
+            document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
+            document.getElementById('prevQuestion').addEventListener('click', prevQuestion);
+        }
+
+        function renderQuizQuestion() {
+            const quizContent = document.getElementById('quizContent');
+            const question = quizQuestions[currentQuestion];
+            
+            let optionsHtml = '';
+            question.options.forEach((option, index) => {
+                const isSelected = userAnswers[currentQuestion] === option.text;
+                optionsHtml += `
+                    <div class="quiz-option ${isSelected ? 'selected' : ''}" data-index="${index}">
+                        <div class="option-circle">${String.fromCharCode(65 + index)}</div>
+                        <div class="option-text">${option.text}</div>
+                    </div>
+                `;
+            });
+            
+            quizContent.innerHTML = `
+                <h3 class="quiz-question">${question.question}</h3>
+                <div class="quiz-options">${optionsHtml}</div>
+            `;
+            
+            // Adicionar eventos às opções
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const optionIndex = parseInt(this.dataset.index);
+                    selectQuizOption(optionIndex);
                 });
-                list.appendChild(div);
             });
-            area.appendChild(list);
-            document.getElementById('quizHint').textContent = '';
-            updateProgress();
-            startTimer();
+            
+            // Atualizar progresso
+            document.getElementById('quizProgress').style.width = `${((currentQuestion + 1) / quizQuestions.length) * 100}%`;
+            document.getElementById('currentQuestion').textContent = currentQuestion + 1;
+            
+            // Atualizar botões
+            document.getElementById('prevQuestion').disabled = currentQuestion === 0;
+            document.getElementById('nextQuestion').textContent = currentQuestion === quizQuestions.length - 1 ? 'Ver Resultado' : 'Próxima';
         }
 
-        function autoNext(){
-            const q = quizQuestions[quizState.index];
-            const s = typeof quizState.selected==='number' ? quizState.selected : null;
-            const correct = q.a;
-            if(s===correct) quizState.score += 10;
-            quizState.answers.push({q:quizState.index, selected:s, correct});
-            showFeedbackAndMove();
-        }
-
-        function showFeedbackAndMove(){
-            clearInterval(quizState.timerId);
-            const opts = document.querySelectorAll('.option');
-            const correctIdx = quizQuestions[quizState.index].a;
-            opts.forEach(o=>{
-                const idx = Number(o.dataset.idx);
-                if(idx===correctIdx) o.classList.add('correct');
-                if(o.classList.contains('selected') && idx!==correctIdx) o.classList.add('wrong');
+        function selectQuizOption(optionIndex) {
+            const question = quizQuestions[currentQuestion];
+            userAnswers[currentQuestion] = question.options[optionIndex].text;
+            
+            // Atualizar interface
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected');
             });
-            // show explanation
-            document.getElementById('quizHint').textContent = quizQuestions[quizState.index].explain || '';
-            setTimeout(()=>{
-                quizState.index++;
-                delete quizState.selected;
-                if(quizState.index >= quizQuestions.length){ finishQuiz(); } else { showQuestion(); }
-            },1200);
+            document.querySelector(`.quiz-option[data-index="${optionIndex}"]`).classList.add('selected');
         }
 
-        function finishQuiz(){
-            clearInterval(quizState.timerId);
-            document.getElementById('score').textContent = quizState.score;
-            // summary
-            const sum = document.getElementById('quizSummary'); sum.innerHTML='';
-            quizState.answers.forEach(a=>{
-                const li = document.createElement('li');
-                const q = quizQuestions[a.q];
-                li.textContent = `${q.q} — Sua resposta: ${q.options[a.selected] ?? 'Sem resposta'} — Correta: ${q.options[a.correct]}`;
-                sum.appendChild(li);
-            });
-            // confetti simple
-            triggerConfetti();
-            alert('Quiz terminado! Pontuação: ' + quizState.score);
-        }
-
-        function triggerConfetti(){
-            const el = document.getElementById('confetti');
-            el.innerHTML='';
-            for(let i=0;i<40;i++){
-                const c = document.createElement('div');
-                const size = Math.random()*8+6;
-                c.style.position='fixed'; c.style.left = Math.random()*100+'%'; c.style.top = '-10px';
-                c.style.width = size+'px'; c.style.height = size+'px';
-                c.style.background = i%2? 'rgba(11,94,215,0.9)':'rgba(13,202,240,0.9)';
-                c.style.borderRadius='2px'; c.style.zIndex=9999; c.style.opacity=0.95;
-                c.style.transition='transform 2.5s linear, top 2.5s linear, opacity 500ms linear';
-                document.body.appendChild(c);
-                setTimeout(()=>{ c.style.top = (80+Math.random()*40)+'%'; c.style.transform = `rotate(${Math.random()*720}deg)`; c.style.opacity='0'; },10);
-                setTimeout(()=>{ c.remove(); },2800);
+        function nextQuestion() {
+            if (currentQuestion < quizQuestions.length - 1) {
+                if (!userAnswers[currentQuestion]) {
+                    showNotification('Por favor, selecione uma resposta!', 'error');
+                    return;
+                }
+                currentQuestion++;
+                renderQuizQuestion();
+            } else {
+                if (!userAnswers[currentQuestion]) {
+                    showNotification('Por favor, selecione uma resposta!', 'error');
+                    return;
+                }
+                showQuizResult();
             }
         }
 
-        document.getElementById('nextBtn').addEventListener('click', ()=>{
-            const s = quizState.selected;
-            if(typeof s==='undefined') return alert('Escolha uma opção.');
-            const correct = quizQuestions[quizState.index].a;
-            if(s===correct) quizState.score += 10;
-            quizState.answers.push({q:quizState.index, selected:s, correct});
-            showFeedbackAndMove();
-        });
-
-        document.getElementById('restartBtn').addEventListener('click', ()=>{quizState = {index:0,score:0,answers:[],timeLeft:20,timerId:null}; showQuestion();});
-
-        function formatSummary(){
-            // placeholder for potential extended summary
-        }
-
-        /* ---------------- Additional UI: map, lightbox, suggestions, reveal ---------------- */
-        const cityCoords = {
-            'Porto':[41.1579,-8.6291], 'Lisboa':[38.7223,-9.1393], 'Faro':[37.0194,-7.9304], 'Coimbra':[40.2033,-8.4103],
-            'Braga':[41.5454,-8.4265], 'Cascais':[38.6979,-9.4221], 'Aveiro':[40.6405,-8.6538], 'Évora':[38.5710,-7.9135],
-            'Algarve':[37.0179,-7.9303], 'Setúbal':[38.5244,-8.8882], 'Bragança':[41.8062,-6.7543], 'Lagos':[37.1020,-8.6784],
-            'Leiria':[39.7436,-8.8070], 'Viana do Castelo':[41.6933,-8.8339], 'Funchal':[32.6669,-16.9241], 'Vila Nova de Milfontes':[37.7618,-8.7864],
-            'Serra da Estrela':[40.3210,-7.6039]
-        };
-
-        let mapInstance = null;
-        function initMap(){
-            try{
-                const el = document.getElementById('mapPlaceholder');
-                el.innerHTML = '<div id="map" style="height:100%;width:100%"></div>';
-                mapInstance = L.map('map', {zoomControl:true}).setView([39.5,-8.0], 7);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap contributors'}).addTo(mapInstance);
-                houses.forEach(h=>{
-                    const c = cityCoords[h.city] || [39.5,-8.0];
-                    const m = L.marker(c).addTo(mapInstance).bindPopup(`<strong>${h.title}</strong><br>${h.city}<br>€${h.price.toLocaleString()}`);
-                });
-            } catch(e){ console.warn('Leaflet init failed',e) }
-        }
-
-        // Lightbox for gallery images and house images
-        function initLightbox(){
-            const galleryImgs = document.querySelectorAll('#gallery img, .house-thumb');
-            galleryImgs.forEach(img=>{
-                img.style.cursor = 'zoom-in';
-                img.addEventListener('click', (ev)=>{
-                    openLightbox(ev.currentTarget.src, ev.currentTarget.alt||'Imagem');
-                });
-            });
-        }
-
-        function openLightbox(src,alt){
-            let lb = document.getElementById('imageLightbox');
-            if(!lb) return;
-            lb.querySelector('.modal-body img').src = src;
-            lb.querySelector('.modal-title').textContent = alt;
-            const modal = new bootstrap.Modal(lb);
-            modal.show();
-        }
-
-        // Reveal on scroll
-        function initReveal(){
-            const obs = new IntersectionObserver((entries)=>{
-                entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
-            },{threshold:0.12});
-            document.querySelectorAll('.card-house, .hero-visual, #gallery img, .quiz-card').forEach(el=>{ el.classList.add('reveal'); obs.observe(el); });
-        }
-
-        // Search suggestions
-        function initSearchSuggestions(){
-            const input = document.getElementById('searchInput');
-            const box = document.getElementById('searchSuggestions');
-            input.addEventListener('input', ()=>{
-                const q = input.value.trim().toLowerCase();
-                if(!q){ box.style.display='none'; return; }
-                const matches = houses.filter(h=>h.title.toLowerCase().includes(q) || h.city.toLowerCase().includes(q)).slice(0,8);
-                box.innerHTML = '';
-                matches.forEach(m=>{
-                    const it = document.createElement('button'); it.type='button'; it.className='list-group-item list-group-item-action';
-                    it.textContent = `${m.title} — ${m.city} — €${m.price.toLocaleString()}`;
-                    it.addEventListener('click', ()=>{ input.value = m.title; box.style.display='none'; applyListState(); });
-                    box.appendChild(it);
-                });
-                box.style.display = matches.length? 'block':'none';
-            });
-            document.addEventListener('click', (e)=>{ if(!e.target.closest('#searchSuggestions') && e.target.id!=='searchInput') box.style.display='none'; });
-        }
-
-        // Quiz leaderboard
-        function saveScoreToLeaderboard(name,score){
-            const k = 'quizLeaderboard';
-            const list = JSON.parse(localStorage.getItem(k)||'[]');
-            list.push({name,score,date:new Date().toISOString()});
-            list.sort((a,b)=>b.score-a.score);
-            localStorage.setItem(k, JSON.stringify(list.slice(0,10)));
-            renderLeaderboard();
-        }
-        function renderLeaderboard(){
-            const box = document.getElementById('quizSummary');
-            const list = JSON.parse(localStorage.getItem('quizLeaderboard')||'[]');
-            const leader = document.getElementById('quizLeaderboard');
-            if(leader){ leader.innerHTML = list.length? list.map(l=>`<li>${l.name} — ${l.score}</li>`).join('') : '<li class="text-muted">Sem pontuações salvas</li>'; }
-            // show top 3 in summary panel too
-            if(box){ box.innerHTML = list.slice(0,5).map(l=>`<li>${l.name} — ${l.score}</li>`).join('') || '<li class="text-muted">Sem pontuações salvas</li>' }
-        }
-
-        function animateCounters(){
-            const elH = document.getElementById('statHouses');
-            const elC = document.getElementById('statCities');
-            const targetH = houses.length; const targetC = [...new Set(houses.map(h=>h.city))].length;
-            let a=0,b=0; const t = setInterval(()=>{ if(a<targetH) elH.textContent = ++a; if(b<targetC) elC.textContent = ++b; if(a>=targetH && b>=targetC) clearInterval(t); },40);
-        }
-
-        // Append a floating FAB
-        (function addFAB(){
-            const a = document.createElement('a'); a.href='#contact'; a.className='btn btn-primary fab'; a.innerHTML = '<i class="fa-solid fa-comment-dots"></i>'; document.body.appendChild(a);
-        })();
-
-        // Add lightbox modal markup dynamically so file edits are minimal
-        (function ensureLightbox(){
-            if(!document.getElementById('imageLightbox')){
-                const div = document.createElement('div'); div.innerHTML = `\
-                <div class="modal fade" id="imageLightbox" tabindex="-1">\
-                  <div class="modal-dialog modal-dialog-centered modal-lg">\
-                    <div class="modal-content">\
-                      <div class="modal-header">\
-                        <h5 class="modal-title">Imagem</h5>\
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\
-                      </div>\
-                      <div class="modal-body text-center">\
-                        <img src="" class="img-fluid lightbox-img" alt="">\
-                      </div>\
-                    </div>\
-                  </div>\
-                </div>`;
-                document.body.appendChild(div.firstElementChild);
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuizQuestion();
             }
-        })();
-
-        // Extend finishQuiz to save to leaderboard
-        const originalFinish = finishQuiz;
-        finishQuiz = function(){
-            originalFinish();
-            const initials = prompt('Guarde a sua pontuação — escreva as suas iniciais (ex: AAA):','AAA');
-            if(initials){ saveScoreToLeaderboard(initials.toUpperCase().slice(0,6), quizState.score); }
         }
 
-        document.addEventListener('DOMContentLoaded', ()=>{ 
-            renderHouses(houses); 
-            showQuestion(); 
-            initMap(); 
-            initLightbox(); 
-            initReveal(); 
-            initSearchSuggestions(); 
-            renderLeaderboard();
-            animateCounters();
+        function showQuizResult() {
+            // Calcular pontuação
+            quizScore = 0;
+            quizQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const correctOption = question.options.find(opt => opt.correct);
+                if (userAnswer === correctOption.text) {
+                    quizScore++;
+                }
+            });
+            
+            const quizContent = document.getElementById('quizContent');
+            const discount = quizScore >= 4 ? 15 : quizScore >= 3 ? 10 : quizScore >= 2 ? 5 : 0;
+            
+            quizContent.innerHTML = `
+                <div class="quiz-result">
+                    <h3>Quiz Concluído!</h3>
+                    <div class="result-score">
+                        <div class="score-circle">${quizScore}/5</div>
+                        <p>Acertou ${quizScore} de ${quizQuestions.length} perguntas</p>
+                    </div>
+                    ${discount > 0 ? `
+                        <div class="discount-badge">
+                            <i class="fas fa-tag"></i>
+                            <span>${discount}% de desconto!</span>
+                        </div>
+                        <p class="discount-code">Use o código: <strong>LITERATURA${quizScore}</strong></p>
+                        <p class="discount-info">Este código é válido por 30 dias na sua próxima compra</p>
+                    ` : `
+                        <p class="no-discount">Continue a explorar a literatura para ganhar descontos!</p>
+                    `}
+                    <button class="restart-quiz-btn" onclick="restartQuiz()">Refazer Quiz</button>
+                </div>
+            `;
+            
+            document.querySelector('.quiz-navigation').style.display = 'none';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            quizScore = 0;
+            userAnswers = [];
+            document.querySelector('.quiz-navigation').style.display = 'flex';
+            renderQuizQuestion();
+        }
+
+        // Utilitários
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animação de entrada
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Fechar dropdown do carrinho ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.cart-icon')) {
+                document.querySelector('.cart-dropdown').classList.remove('show');
+            }
         });
     </script>
+    <style>
+        /* Reset e Estilos Gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background-color: #f8f5ef;
+            color: #3c2f2f;
+            line-height: 1.6;
+            background-image: url('https://www.transparenttextures.com/patterns/paper.png');
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Cabeçalho */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 0;
+            border-bottom: 2px solid #d4b896;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.8rem;
+            color: #8b4513;
+        }
+
+        .logo h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            color: #3c2f2f;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #6d5d4b;
+            margin-top: 5px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #5d4037;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #d4b896;
+            color: #3c2f2f;
+        }
+
+        /* Ícone do Carrinho */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #5d4037;
+            padding: 10px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #8b4513;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .cart-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #d4b896;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 350px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 100;
+        }
+
+        .cart-dropdown.show {
+            display: block;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .cart-item-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-info p {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #d4b896;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .qty {
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .cart-item-price {
+            font-weight: bold;
+            color: #8b4513;
+            margin-left: auto;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 2px solid #d4b896;
+        }
+
+        #checkout-btn {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Carrossel */
+        .carousel-section {
+            margin-bottom: 60px;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            height: 500px;
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(60, 47, 47, 0.85);
+            color: #f8f5ef;
+            padding: 25px;
+            border-top: 3px solid #d4b896;
+        }
+
+        .carousel-caption h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .carousel-caption p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(139, 69, 19, 0.8);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(139, 69, 19, 1);
+        }
+
+        .prev-btn {
+            left: 20px;
+        }
+
+        .next-btn {
+            right: 20px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background-color: #d4b896;
+            transform: scale(1.2);
+        }
+
+        /* Catálogo */
+        .catalog-section {
+            padding: 60px 0;
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            color: #5d4037;
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #6d5d4b;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            border: 2px solid #d4b896;
+            background: white;
+            color: #5d4037;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Crimson Pro', serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: #8b4513;
+            color: white;
+            border-color: #8b4513;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .book-image {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .book-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .book-card:hover .book-image img {
+            transform: scale(1.05);
+        }
+
+        .flag-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .book-info {
+            padding: 20px;
+        }
+
+        .book-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #3c2f2f;
+            margin-bottom: 8px;
+        }
+
+        .book-author {
+            color: #8b4513;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .book-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .book-rating i {
+            color: #ffc107;
+        }
+
+        .rating-value {
+            font-weight: bold;
+            color: #5d4037;
+        }
+
+        .book-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .book-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .book-price {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b4513;
+            font-weight: bold;
+        }
+
+        .btn-add-to-cart {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Crimson Pro', serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-add-to-cart:hover {
+            background-color: #6b3410;
+        }
+
+        /* Modal do Livro */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+            padding: 24px; /* add internal spacing so content doesn't touch edges */
+            box-sizing: border-box;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: #8b4513;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .book-modal-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .book-modal-image {
+            position: sticky;
+            top: 20px;
+        }
+
+        .book-modal-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .book-modal-info h2 {
+            text-align: left;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .book-modal-author {
+            font-size: 1.2rem;
+            color: #8b4513;
+            margin-bottom: 20px;
+        }
+
+        .book-modal-rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .review-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .book-modal-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            color: #444;
+        }
+
+        .book-details {
+            background: #f9f5f0;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .book-details h4 {
+            font-family: 'Cinzel', serif;
+            margin-bottom: 20px;
+            color: #5d4037;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0d6c8;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #5d4037;
+        }
+
+        .book-modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 2px solid #d4b896;
+        }
+
+        .price-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .book-modal-price {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: #8b4513;
+            font-weight: bold;
+        }
+
+        .stock-status {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .btn-add-to-cart-modal {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-to-cart-modal:hover {
+            background-color: #6b3410;
+            transform: translateY(-3px);
+        }
+
+        /* Modal do Carrinho */
+        .cart-modal {
+            max-width: 800px;
+        }
+
+        .cart-items-modal {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+
+        .cart-item-modal {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-modal img {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .cart-item-modal-info {
+            flex: 1;
+        }
+
+        .cart-item-modal-info h4 {
+            margin-bottom: 5px;
+        }
+
+        .cart-item-modal-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .qty-btn-modal {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #d4b896;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .qty-modal {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .cart-item-modal-price {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .cart-summary {
+            background: #f9f5f0;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .summary-row.total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #8b4513;
+            border-top: 2px solid #d4b896;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background-color: #6b3410;
+        }
+
+        /* Modal de Checkout */
+        .checkout-modal {
+            max-width: 900px;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .checkout-steps:before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #d4b896;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 10px 20px;
+            border: 2px solid #d4b896;
+            border-radius: 25px;
+            color: #6d5d4b;
+        }
+
+        .step.active {
+            background: #8b4513;
+            color: white;
+            border-color: #8b4513;
+        }
+
+        .step.completed {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .checkout-form {
+            padding: 20px 0;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            padding: 18px 20px; /* keep content away from borders */
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #5d4037;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d4b896;
+            border-radius: 6px;
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            background-color: #fdfcf9;
+        }
+
+        /* Extra spacing for checkout inputs */
+        #checkoutForm .form-group { margin-bottom: 18px; }
+        #checkoutForm .form-row { gap: 18px; }
+        #checkoutForm .btn-next, #checkoutForm .btn-prev, #checkoutForm .btn-submit { padding: 12px 24px; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid #d4b896;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .payment-method input[type="radio"] {
+            width: auto;
+        }
+
+        .payment-method label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+        }
+
+        .payment-details {
+            background: #f9f5f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .btn-prev, .btn-next, .btn-submit {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+        }
+
+        .btn-prev {
+            background: #6d5d4b;
+            color: white;
+        }
+
+        .btn-next, .btn-submit {
+            background: #8b4513;
+            color: white;
+        }
+
+        .order-summary {
+            background: #f9f5f0;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0d6c8;
+        }
+
+        .order-totals {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #d4b896;
+        }
+
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .order-total-row.total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        .terms-agreement {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        /* Quiz */
+        .quiz-section {
+            background: white;
+            padding: 60px;
+            border-radius: 12px;
+            margin: 60px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-progress {
+            margin-bottom: 40px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #d4b896;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            width: 20%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: right;
+            color: #8b4513;
+            font-style: italic;
+        }
+
+        .quiz-question {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #5d4037;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border: 2px solid #d4b896;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #f9f5f0;
+        }
+
+        .quiz-option.selected {
+            background: #8b4513;
+            color: white;
+            border-color: #8b4513;
+        }
+
+        .option-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .quiz-option.selected .option-circle {
+            background: white;
+            color: #8b4513;
+        }
+
+        .option-text {
+            flex: 1;
+            font-size: 1.1rem;
+        }
+
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-btn {
+            padding: 12px 30px;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .result-score {
+            margin: 40px 0;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #8b4513;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .discount-badge {
+            background: #ffc107;
+            color: #856404;
+            padding: 15px 30px;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .discount-code {
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .discount-info {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .restart-quiz-btn {
+            background: #5d4037;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+        }
+
+        /* Rodapé */
+        footer {
+            background: #3c2f2f;
+            color: #f8f5ef;
+            padding: 60px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4b896;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            color: #f8f5ef;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: #d4b896;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #5d4037;
+            color: #b8a9a9;
+            font-size: 0.9rem;
+        }
+
+        /* Notificações */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2000;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .notification.info {
+            border-left: 4px solid #17a2b8;
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+        }
+
+        .notification.success i {
+            color: #28a745;
+        }
+
+        .notification.error i {
+            color: #dc3545;
+        }
+
+        .notification.info i {
+            color: #17a2b8;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .book-modal-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .book-modal-image {
+                position: static;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .carousel-container {
+                height: 300px;
+            }
+            
+            .carousel-caption h3 {
+                font-size: 1.3rem;
+            }
+            
+            .carousel-caption p {
+                font-size: 0.9rem;
+            }
+            
+            .cart-dropdown {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: 12px 12px 0 0;
+                min-width: auto;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-question {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .book-modal-content {
+                padding: 20px;
+            }
+            
+            .book-modal-actions {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .checkout-steps {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .checkout-steps:before {
+                display: none;
+            }
+            
+            .step {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </body>
 </html>
